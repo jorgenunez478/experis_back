@@ -39,12 +39,20 @@ class AuthController extends Controller
     }
 
     /**
-     * Funcion para el inicio de sesion
+     * Función para el inicio de sesión
      */
     public function login (Request $request)
     {
-        if(!Auth::attempt(["email" => $request->email, "password" => $request->password]))
-        {   
+        $validator = Validator::make($request->all(), [
+            'email' => 'required|email|max:255',
+            'password' => 'required|string|min:8'
+        ]);
+
+        if($validator->fails()){
+            return response()->json($validator->errors());
+        }
+
+        if(!Auth::attempt(["email" => $request->email, "password" => $request->password])){   
             return response()->json(['message' => 'Unauthorized'], 401);
         }
 
